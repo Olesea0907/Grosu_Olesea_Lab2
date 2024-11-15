@@ -28,15 +28,17 @@ namespace Grosu_Olesea_Lab2.Pages.Books
                 return NotFound();
             }
 
-            var book = await _context.Book.FirstOrDefaultAsync(m => m.ID == id);
-            if (book == null)
+            // Include relațiile cu Author și Publisher
+            Book = await _context.Book
+                .Include(b => b.Author)    // Încarcă relația cu Author
+                .Include(b => b.Publisher) // Încarcă relația cu Publisher
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (Book == null)
             {
                 return NotFound();
             }
-            else
-            {
-                Book = book;
-            }
+
             return Page();
         }
     }

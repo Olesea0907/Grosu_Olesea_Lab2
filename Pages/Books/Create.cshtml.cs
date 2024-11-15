@@ -21,19 +21,47 @@ namespace Grosu_Olesea_Lab2.Pages.Books
 
         public IActionResult OnGet()
         {
-            ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID", "PublisherName");
-            ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "FullName");
+            // Populează dropdown pentru Publisher cu o opțiune implicită
+            ViewData["PublisherID"] = new SelectList(
+                new List<SelectListItem>
+                {
+                    new SelectListItem { Text = "-- Select a Publisher --", Value = "" }
+                }
+                .Concat(_context.Set<Publisher>()
+                    .Select(p => new SelectListItem
+                    {
+                        Text = p.PublisherName,
+                        Value = p.ID.ToString()
+                    })
+                ).ToList(), "Value", "Text");
+
+            // Populează dropdown pentru Author cu o opțiune implicită
+            ViewData["AuthorID"] = new SelectList(
+                new List<SelectListItem>
+                {
+                    new SelectListItem { Text = "-- Select an Author --", Value = "" }
+                }
+                .Concat(_context.Set<Author>()
+                    .Select(a => new SelectListItem
+                    {
+                        Text = $"{a.FirstName} {a.LastName}",
+                        Value = a.ID.ToString()
+                    })
+                ).ToList(), "Value", "Text");
+
             return Page();
         }
 
         [BindProperty]
-        public Models.Book Book { get; set; } = default!;
+        public Book Book { get; set; } = default!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
+                // Reîncarcă dropdown-urile în caz de eroare de validare
+                OnGet();
                 return Page();
             }
 
