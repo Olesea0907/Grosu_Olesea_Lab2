@@ -10,44 +10,39 @@ using Grosu_Olesea_Lab2.Models;
 
 namespace Grosu_Olesea_Lab2.Pages.Books
 {
-    public class CreateModel : PageModel
+    public class CreateModel : BookCategoriesPageModel
     {
-        private readonly Grosu_Olesea_Lab2.Data.Grosu_Olesea_Lab2Context _context;
+        private readonly Grosu_Olesea_Lab2Context _context;
 
-        public CreateModel(Grosu_Olesea_Lab2.Data.Grosu_Olesea_Lab2Context context)
+        public CreateModel(Grosu_Olesea_Lab2Context context)
         {
             _context = context;
         }
 
         public IActionResult OnGet()
         {
-            // Populează dropdown pentru Publisher cu o opțiune implicită
+            // Dropdown pentru Publisher
             ViewData["PublisherID"] = new SelectList(
-                new List<SelectListItem>
+                _context.Publisher.Select(p => new
                 {
-                    new SelectListItem { Text = "-- Select a Publisher --", Value = "" }
-                }
-                .Concat(_context.Set<Publisher>()
-                    .Select(p => new SelectListItem
-                    {
-                        Text = p.PublisherName,
-                        Value = p.ID.ToString()
-                    })
-                ).ToList(), "Value", "Text");
+                    p.ID,
+                    p.PublisherName
+                }),
+                "ID", "PublisherName");
 
-            // Populează dropdown pentru Author cu o opțiune implicită
-            ViewData["AuthorID"] = new SelectList(
-                new List<SelectListItem>
-                {
-                    new SelectListItem { Text = "-- Select an Author --", Value = "" }
-                }
-                .Concat(_context.Set<Author>()
-                    .Select(a => new SelectListItem
-                    {
-                        Text = $"{a.FirstName} {a.LastName}",
-                        Value = a.ID.ToString()
-                    })
-                ).ToList(), "Value", "Text");
+            // Dropdown pentru Author
+            var authorList = _context.Author.Select(x => new
+            {
+                x.ID,
+                FullName = x.LastName + " " + x.FirstName
+            }).ToList();
+
+            ViewData["AuthorID"] = new SelectList(authorList, "ID", "FullName");
+
+            // Pregătește datele pentru categoriile asociate
+            var book = new Book();
+            book.BookCategories = new List<BookCategory>();
+            PopulateAssignedCategoryData(_context, book);
 
             return Page();
         }
@@ -55,16 +50,30 @@ namespace Grosu_Olesea_Lab2.Pages.Books
         [BindProperty]
         public Book Book { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string[] selectedCategories)
         {
             if (!ModelState.IsValid)
             {
-                // Reîncarcă dropdown-urile în caz de eroare de validare
+                // Reîncarcă dropdown-urile și datele pentru checkbox-uri în caz de eroare de validare
                 OnGet();
                 return Page();
             }
 
+            var newBook = new Book();
+            if (selectedCategories != null)
+            {
+                newBook.BookCategories = new List<BookCategory>();
+                foreach (var cat in selectedCategories)
+                {
+                    var catToAdd = new BookCategory
+                    {
+                        CategoryID = int.Parse(cat)
+                    };
+                    newBook.BookCategories.Add(catToAdd);
+                }
+            }
+
+            Book.BookCategories = newBook.BookCategories;
             _context.Book.Add(Book);
             await _context.SaveChangesAsync();
 

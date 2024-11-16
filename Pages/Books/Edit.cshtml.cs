@@ -11,17 +11,17 @@ using Grosu_Olesea_Lab2.Models;
 
 namespace Grosu_Olesea_Lab2.Pages.Books
 {
-    public class EditModel : PageModel
+    public class EditModel : BookCategoriesPageModel
     {
-        private readonly Grosu_Olesea_Lab2.Data.Grosu_Olesea_Lab2Context _context;
+        private readonly Grosu_Olesea_Lab2Context _context;
 
-        public EditModel(Grosu_Olesea_Lab2.Data.Grosu_Olesea_Lab2Context context)
+        public EditModel(Grosu_Olesea_Lab2Context context)
         {
             _context = context;
         }
 
         [BindProperty]
-        public Models.Book Book { get; set; } = default!;
+        public Book Book { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,51 +30,80 @@ namespace Grosu_Olesea_Lab2.Pages.Books
                 return NotFound();
             }
 
-            var book =  await _context.Book.FirstOrDefaultAsync(m => m.ID == id);
-            if (book == null)
+            // Include relațiile necesare
+            Book = await _context.Book
+                .Include(b => b.Publisher)
+                .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (Book == null)
             {
                 return NotFound();
             }
-            Book = book;
-            ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID","PublisherName");
-            ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "FullName");
+
+            // Populează datele pentru categoriile asignate
+            PopulateAssignedCategoryData(_context, Book);
+
+            // Creează lista pentru dropdown-ul Author
+            var authorList = _context.Author.Select(a => new
+            {
+                a.ID,
+                FullName = a.LastName + " " + a.FirstName
+            }).ToList();
+            ViewData["AuthorID"] = new SelectList(authorList, "ID", "FullName");
+
+            // Creează lista pentru dropdown-ul Publisher
+            ViewData["PublisherID"] = new SelectList(_context.Publisher, "ID", "PublisherName");
 
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedCategories)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            _context.Attach(Book).State = EntityState.Modified;
+            // Include relațiile necesare
+            var bookToUpdate = await _context.Book
+                .Include(b => b.Publisher)
+                .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+                .FirstOrDefaultAsync(b => b.ID == id);
 
-            try
+            if (bookToUpdate == null)
             {
+                return NotFound();
+            }
+
+            selectedCategories ??= Array.Empty<string>();
+
+            // Actualizează datele din formular
+            if (await TryUpdateModelAsync<Book>(
+                bookToUpdate,
+                "Book",
+                b => b.Title, b => b.AuthorID,
+                b => b.Price, b => b.PublishingDate, b => b.PublisherID))
+            {
+                // Actualizează categoriile asociate
+                UpdateBookCategories(_context, selectedCategories, bookToUpdate);
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(Book.ID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
+            // În caz de eroare, reîncarcă datele
+            PopulateAssignedCategoryData(_context, bookToUpdate);
+            ViewData["PublisherID"] = new SelectList(_context.Publisher, "ID", "PublisherName", bookToUpdate.PublisherID);
+            ViewData["AuthorID"] = new SelectList(
+                _context.Author.Select(a => new
+                {
+                    a.ID,
+                    FullName = a.LastName + " " + a.FirstName
+                }),
+                "ID", "FullName", bookToUpdate.AuthorID);
 
-        private bool BookExists(int id)
-        {
-            return _context.Book.Any(e => e.ID == id);
+            return Page();
         }
     }
 }

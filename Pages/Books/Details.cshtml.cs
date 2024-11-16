@@ -28,10 +28,12 @@ namespace Grosu_Olesea_Lab2.Pages.Books
                 return NotFound();
             }
 
-            // Include relațiile cu Author și Publisher
+            // Include relațiile cu Author, Publisher și Categories
             Book = await _context.Book
                 .Include(b => b.Author)    // Încarcă relația cu Author
                 .Include(b => b.Publisher) // Încarcă relația cu Publisher
+                .Include(b => b.BookCategories) // Încarcă relația BookCategories
+                    .ThenInclude(bc => bc.Category) // Încarcă relația Category din BookCategories
                 .FirstOrDefaultAsync(m => m.ID == id);
 
             if (Book == null)
