@@ -27,10 +27,10 @@ namespace Grosu_Olesea_Lab2.Pages.Books
                 return NotFound();
             }
 
-            // Încarcă cartea împreună cu relațiile Author și Publisher
             Book = await _context.Book
                 .Include(b => b.Author)    // Include relația cu Author
                 .Include(b => b.Publisher) // Include relația cu Publisher
+                .Include(b => b.BookCategories).ThenInclude(bc => bc.Category) // Include categoriile
                 .FirstOrDefaultAsync(m => m.ID == id);
 
             if (Book == null)
@@ -48,12 +48,16 @@ namespace Grosu_Olesea_Lab2.Pages.Books
                 return NotFound();
             }
 
-            // Găsește cartea direct după ID pentru ștergere, fără a include relațiile
-            Book = await _context.Book.FindAsync(id);
+            Book = await _context.Book
+                .Include(b => b.BookCategories) 
+                .FirstOrDefaultAsync(b => b.ID == id);
 
             if (Book != null)
             {
+                _context.RemoveRange(Book.BookCategories);
+
                 _context.Book.Remove(Book);
+
                 await _context.SaveChangesAsync();
             }
 

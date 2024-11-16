@@ -30,7 +30,6 @@ namespace Grosu_Olesea_Lab2.Pages.Books
                 return NotFound();
             }
 
-            // Include relațiile necesare
             Book = await _context.Book
                 .Include(b => b.Publisher)
                 .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
@@ -42,10 +41,8 @@ namespace Grosu_Olesea_Lab2.Pages.Books
                 return NotFound();
             }
 
-            // Populează datele pentru categoriile asignate
             PopulateAssignedCategoryData(_context, Book);
 
-            // Creează lista pentru dropdown-ul Author
             var authorList = _context.Author.Select(a => new
             {
                 a.ID,
