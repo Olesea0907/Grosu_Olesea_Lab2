@@ -19,29 +19,63 @@ namespace Grosu_Olesea_Lab2.Pages.Books
             _context = context;
         }
 
+        // Properties
         public IList<Book> Book { get; set; }
         public BookData BookD { get; set; } = new BookData();
         public int BookID { get; set; }
         public int CategoryID { get; set; }
+        public string TitleSort { get; set; }
+        public string AuthorSort { get; set; }
+        public string CurrentSort { get; set; }
+        public string CurrentFilter { get; set; }
+        public string SearchString { get; set; }
 
-        public async Task OnGetAsync(int? id, int? categoryID)
+        // Method: OnGetAsync
+        public async Task OnGetAsync(int? id, int? categoryID, string sortOrder, string searchString)
         {
-            BookD.Books = await _context.Book
+            // Sorting options
+            TitleSort = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            AuthorSort = sortOrder == "author" ? "author_desc" : "author";
+            CurrentSort = sortOrder;
+            CurrentFilter = searchString;
+
+            // Query for books with relationships
+            var booksQuery = _context.Book
                 .Include(b => b.Author)
                 .Include(b => b.Publisher)
                 .Include(b => b.BookCategories)
                 .ThenInclude(bc => bc.Category)
-                .AsNoTracking()
-                .OrderBy(b => b.Title)
-                .ToListAsync();
+                .AsQueryable();
 
+            // Apply search filter
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                booksQuery = booksQuery.Where(b =>
+                    b.Title.Contains(searchString) ||
+                    b.Author.FirstName.Contains(searchString) ||
+                    b.Author.LastName.Contains(searchString));
+            }
+
+            // Load books into memory for sorting by FullName
+            var books = await booksQuery.AsNoTracking().ToListAsync();
+
+            // Apply sorting
+            books = sortOrder switch
+            {
+                "title_desc" => books.OrderByDescending(b => b.Title).ToList(),
+                "author_desc" => books.OrderByDescending(b => b.Author.FullName).ToList(),
+                "author" => books.OrderBy(b => b.Author.FullName).ToList(),
+                _ => books.OrderBy(b => b.Title).ToList(),
+            };
+
+            // Assign sorted and filtered books
+            BookD.Books = books;
+
+            // Handle selected book and associated categories
             if (id != null)
             {
                 BookID = id.Value;
-                Book selectedBook = BookD.Books
-                    .Where(b => b.ID == id.Value)
-                    .SingleOrDefault();
-
+                var selectedBook = BookD.Books.FirstOrDefault(b => b.ID == id.Value);
                 if (selectedBook != null)
                 {
                     BookD.Categories = selectedBook.BookCategories.Select(bc => bc.Category);

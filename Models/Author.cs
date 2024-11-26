@@ -1,4 +1,7 @@
-﻿namespace Grosu_Olesea_Lab2.Models
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace Grosu_Olesea_Lab2.Models
 {
     public class Author
     {
@@ -6,9 +9,13 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public string? FullName
+        [Display(Name = "Full Name")]
+        public string FullName
         {
-            get { return FirstName+" " + LastName; }
+            get
+            {
+                return FirstName + " " + LastName;
+            }
         }
 
         public ICollection<Book>? Books { get; set; }
