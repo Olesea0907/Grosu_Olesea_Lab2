@@ -15,7 +15,17 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.PublisherData.Publishers.FirstOrDefault().PublisherName)
+                @if (Model.PublisherData.Publishers.Any())
+
+                {
+                    @Html.DisplayNameFor(model => model.PublisherData.Publishers.First().PublisherName)
+                }
+
+                else
+
+                {
+                    <span>Publisher Name</span>
+                }
             </th>
             <th></th>
         </tr>
@@ -25,15 +35,7 @@
 
         {
 
-            string selectedRow = "";
-
-            if (item.ID == Model.PublisherID)
-
-            {
-
-                selectedRow = "table-success";
-
-            }
+            string selectedRow = item.ID == Model.PublisherID ? "table-success" : "";
             <tr class="@selectedRow">
                 <td>
                     @Html.DisplayFor(modelItem => item.PublisherName)
@@ -52,7 +54,7 @@
 @if (Model.PublisherData.Books != null && Model.PublisherData.Books.Any())
 
 {
-    <h2>Books</h2>
+    <h2>Books Edited by Selected Publisher</h2>
     <table class="table">
         <thead>
             <tr>
@@ -64,17 +66,7 @@
             @foreach (var book in Model.PublisherData.Books)
 
             {
-
-                string selectedBookRow = "";
-
-                if (book.ID == Model.BookID)
-
-                {
-
-                    selectedBookRow = "table-info";
-
-                }
-                <tr class="@selectedBookRow">
+                <tr>
                     <td>
                         @Html.DisplayFor(modelItem => book.Title)
                     </td>
@@ -85,42 +77,4 @@
             }
         </tbody>
     </table>
-
-    @if (Model.PublisherData.Books != null)
-
-    {
-        <h3>Books Edited by Selected Publisher</h3>
-        <table class="table">
-
-            @foreach (var item in Model.PublisherData.Publishers)
-
-            {
-
-                string selectedRow = "";
-
-                if (item.ID == Model.PublisherID)
-
-                {
-
-                    selectedRow = "table-success";
-
-                }
-                <tr class="@selectedRow">
-
-                    <td>
-                        @{
-                            foreach (var b in item.Books)
-
-                            {
-
-                                @b.Title @: @b.Author.FullName
-
-                                <br />
-                            }
-                        }
-                    </td>
-                </tr>
-            }
-        </table>
-    }
 }

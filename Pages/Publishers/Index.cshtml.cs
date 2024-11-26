@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Grosu_Olesea_Lab2.Data;
 using Grosu_Olesea_Lab2.Models;
-using Grosu_Olesea_Lab2.Models.ViewModels; 
+using Grosu_Olesea_Lab2.Models.ViewModels;
 
 namespace Grosu_Olesea_Lab2.Pages.Publishers
 {
@@ -20,37 +20,29 @@ namespace Grosu_Olesea_Lab2.Pages.Publishers
             _context = context;
         }
 
-        
-        public IList<Publisher> Publisher { get; set; } = default!;
         public PublisherIndexData PublisherData { get; set; } = new PublisherIndexData();
         public int PublisherID { get; set; }
         public int BookID { get; set; }
 
         public async Task OnGetAsync(int? id, int? bookID)
         {
-            
             PublisherData.Publishers = await _context.Publisher
-                .Include(i => i.Books)                  
-                .ThenInclude(c => c.Author)             
-                .OrderBy(i => i.PublisherName)          
+                .Include(i => i.Books)
+                .ThenInclude(b => b.Author)
+                .OrderBy(i => i.PublisherName)
                 .ToListAsync();
 
             if (id != null)
             {
                 PublisherID = id.Value;
 
-                
-                Publisher publisher = PublisherData.Publishers
-                    .Where(i => i.ID == id.Value)
-                    .Single();
+                var selectedPublisher = PublisherData.Publishers
+                    .SingleOrDefault(i => i.ID == id.Value);
 
-                
-                PublisherData.Books = publisher.Books;
-            }
-
-            if (bookID != null)
-            {
-                BookID = bookID.Value;
+                if (selectedPublisher != null)
+                {
+                    PublisherData.Books = selectedPublisher.Books;
+                }
             }
         }
     }
