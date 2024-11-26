@@ -7,6 +7,7 @@ using Grosu_Olesea_Lab2.Models;
 
 namespace Grosu_Olesea_Lab2.Data
 {
+
     public class Grosu_Olesea_Lab2Context : DbContext
     {
         public Grosu_Olesea_Lab2Context(DbContextOptions<Grosu_Olesea_Lab2Context> options)
@@ -39,4 +40,5 @@ namespace Grosu_Olesea_Lab2.Data
                 .HasForeignKey(bc => bc.CategoryID);
         }
     }
+
 }
