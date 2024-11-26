@@ -27,6 +27,7 @@ namespace Grosu_Olesea_Lab2.Pages.Books
         public async Task OnGetAsync(int? id, int? categoryID)
         {
             BookD.Books = await _context.Book
+                .Include(b => b.Author)
                 .Include(b => b.Publisher)
                 .Include(b => b.BookCategories)
                 .ThenInclude(bc => bc.Category)
