@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Grosu_Olesea_Lab2.Data;
 using Grosu_Olesea_Lab2.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Grosu_Olesea_Lab2.Pages.Books
 {
+    [Authorize(Roles = "Admin")]
     public class CreateModel : BookCategoriesPageModel
     {
         private readonly Grosu_Olesea_Lab2Context _context;

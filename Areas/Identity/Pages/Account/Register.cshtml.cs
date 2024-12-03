@@ -6,8 +6,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
-using Grosu_Olesea_Lab2.Data; // Include contextul bazei de date
-using Grosu_Olesea_Lab2.Models; // Include modelul Member
+using Grosu_Olesea_Lab2.Data;
+using Grosu_Olesea_Lab2.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -26,7 +26,7 @@ namespace Grosu_Olesea_Lab2.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly Grosu_Olesea_Lab2Context _context; // Adaugă contextul bazei de date
+        private readonly Grosu_Olesea_Lab2Context _context;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -34,7 +34,7 @@ namespace Grosu_Olesea_Lab2.Areas.Identity.Pages.Account
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            Grosu_Olesea_Lab2Context context) // Primește contextul bazei de date
+            Grosu_Olesea_Lab2Context context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -42,7 +42,7 @@ namespace Grosu_Olesea_Lab2.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _context = context; // Inițializează contextul bazei de date
+            _context = context;
         }
 
         [BindProperty]
@@ -94,13 +94,24 @@ namespace Grosu_Olesea_Lab2.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
+                    // Adaugă utilizatorul în rolul "User"
+                    var roleResult = await _userManager.AddToRoleAsync(user, "User");
+                    if (!roleResult.Succeeded)
+                    {
+                        foreach (var error in roleResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                        return Page();
+                    }
+
                     // Salvează email-ul în tabela Member
                     var member = new Member
                     {
-                        Email = Input.Email // Setează email-ul
+                        Email = Input.Email
                     };
-                    _context.Member.Add(member); // Adaugă membrul în baza de date
-                    await _context.SaveChangesAsync(); // Salvează modificările
+                    _context.Member.Add(member);
+                    await _context.SaveChangesAsync();
 
                     // Logica de confirmare email
                     var userId = await _userManager.GetUserIdAsync(user);

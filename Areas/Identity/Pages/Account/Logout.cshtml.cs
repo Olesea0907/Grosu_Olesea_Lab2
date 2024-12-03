@@ -33,10 +33,10 @@ namespace Grosu_Olesea_Lab2.Areas.Identity.Pages.Account
             }
             else
             {
-                // This needs to be a redirect so that the browser performs a new
-                // request and the identity for the user gets updated.
-                return RedirectToPage();
+                // Redirecționează la Books/Index în loc să rămână pe pagina curentă
+                return RedirectToPage("");
             }
         }
     }
-}
+
+    }
