@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Grosu_Olesea_Lab2.Data;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +18,8 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AllowAnonymousToPage("/Books/Index");
     options.Conventions.AllowAnonymousToPage("/Books/Details");
     options.Conventions.AuthorizeFolder("/Members", "AdminPolicy");
+    options.Conventions.AuthorizeFolder("/Publishers", "AdminPolicy"); // Restricție pentru Publishers
+    options.Conventions.AuthorizeFolder("/Categories", "AdminPolicy"); // Restricție pentru Categories
 });
 
 // Register the application database context

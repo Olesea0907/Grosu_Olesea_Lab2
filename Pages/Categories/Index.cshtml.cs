@@ -1,11 +1,12 @@
 ﻿using Grosu_Olesea_Lab2.Data;
-using Grosu_Olesea_Lab2.Models;
 using Grosu_Olesea_Lab2.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore; // Namespace-ul adăugat
 
 namespace Grosu_Olesea_Lab2.Pages.Categories
 {
+    [Authorize(Roles = "Admin")]
     public class IndexModel : PageModel
     {
         private readonly Grosu_Olesea_Lab2Context _context;
@@ -20,11 +21,10 @@ namespace Grosu_Olesea_Lab2.Pages.Categories
 
         public async Task OnGetAsync(int? id)
         {
-
             CategoryData.Categories = await _context.Category
                 .Include(c => c.BookCategories)
                 .ThenInclude(bc => bc.Book)
-                .ThenInclude(b => b.Author) 
+                .ThenInclude(b => b.Author)
                 .OrderBy(c => c.CategoryName)
                 .ToListAsync();
 
