@@ -10,6 +10,7 @@ using Grosu_Olesea_Lab2.Models;
 
 namespace Grosu_Olesea_Lab2.Pages.Authors
 {
+
     public class DetailsModel : PageModel
     {
         private readonly Grosu_Olesea_Lab2.Data.Grosu_Olesea_Lab2Context _context;

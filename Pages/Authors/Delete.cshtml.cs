@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Grosu_Olesea_Lab2.Data;
 using Grosu_Olesea_Lab2.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Grosu_Olesea_Lab2.Pages.Authors
 {
+    [Authorize(Roles = "Admin")] // Restricție pentru Admin
     public class DeleteModel : PageModel
     {
         private readonly Grosu_Olesea_Lab2.Data.Grosu_Olesea_Lab2Context _context;

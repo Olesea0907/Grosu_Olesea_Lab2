@@ -18,8 +18,11 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AllowAnonymousToPage("/Books/Index");
     options.Conventions.AllowAnonymousToPage("/Books/Details");
     options.Conventions.AuthorizeFolder("/Members", "AdminPolicy");
-    options.Conventions.AuthorizeFolder("/Publishers", "AdminPolicy"); // Restricție pentru Publishers
-    options.Conventions.AuthorizeFolder("/Categories", "AdminPolicy"); // Restricție pentru Categories
+    options.Conventions.AuthorizeFolder("/Publishers", "AdminPolicy");
+    options.Conventions.AuthorizeFolder("/Categories", "AdminPolicy");
+    options.Conventions.AuthorizeFolder("/Authors", "AdminPolicy"); // Restricție pentru Authors
+    options.Conventions.AllowAnonymousToPage("/Authors/Index"); 
+    options.Conventions.AllowAnonymousToPage("/Authors/Details"); 
 });
 
 // Register the application database context

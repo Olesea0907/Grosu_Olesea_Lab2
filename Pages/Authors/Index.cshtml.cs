@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Grosu_Olesea_Lab2.Data;
 using Grosu_Olesea_Lab2.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Grosu_Olesea_Lab2.Pages.Authors
 {
