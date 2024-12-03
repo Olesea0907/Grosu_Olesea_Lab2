@@ -9,7 +9,7 @@ namespace Grosu_Olesea_Lab2.Models
 
         [Display(Name = "Book Title")]
         [Required(ErrorMessage = "Titlul cărții este obligatoriu.")]
-        [StringLength(100, ErrorMessage = "Titlul nu poate depăși 100 de caractere.")]
+        [StringLength(150, MinimumLength = 3, ErrorMessage = "Titlul trebuie să aibă între 3 și 150 de caractere.")]
         public string Title { get; set; }
 
         [Column(TypeName = "decimal(6, 2)")]

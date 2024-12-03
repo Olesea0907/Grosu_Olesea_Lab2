@@ -21,7 +21,7 @@ namespace Grosu_Olesea_Lab2.Models
         [EmailAddress(ErrorMessage = "Introduceți un email valid.")]
         public string Email { get; set; }
 
-        [RegularExpression(@"^\(?([0-9]{4})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$", ErrorMessage = "Telefonul trebuie să fie de forma '0722-123-123', '0722.123.123' sau '0722 123 123'.")]
+        [RegularExpression(@"^0[0-9]{3}[-. ]?[0-9]{3}[-. ]?[0-9]{3}$", ErrorMessage = "Telefonul trebuie să înceapă cu '0' și să fie de forma '0722-123-123', '0722.123.123' sau '0722 123 123'.")]
         public string? Phone { get; set; }
 
         [Display(Name = "Full Name")]
