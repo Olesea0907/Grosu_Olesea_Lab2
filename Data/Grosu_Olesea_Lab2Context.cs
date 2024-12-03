@@ -39,6 +39,10 @@ namespace Grosu_Olesea_Lab2.Data
                 .WithMany(c => c.BookCategories)
                 .HasForeignKey(bc => bc.CategoryID);
         }
+
+public DbSet<Grosu_Olesea_Lab2.Models.Member> Member { get; set; } = default!;
+
+public DbSet<Grosu_Olesea_Lab2.Models.Borrowing> Borrowing { get; set; } = default!;
     }
 
 }

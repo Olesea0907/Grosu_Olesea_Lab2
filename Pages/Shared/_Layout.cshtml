@@ -14,8 +14,10 @@
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Books/Index">Books</a>
                 <a class="navbar-brand" asp-area="" asp-page="/Publishers/Index">Publish</a>
-                <a class="navbar-brand" asp-area="" asp-page="/Authors/Index">Authors</a> <!-- Linkul pentru Authors -->
+                <a class="navbar-brand" asp-area="" asp-page="/Authors/Index">Authors</a>
                 <a class="navbar-brand" asp-area="" asp-page="/Categories/Index">Categories</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Members/Index">Members</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Borrowings/Index">Borrowings</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -27,6 +29,15 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                    <!-- Înlocuiește secțiunea de autentificare cu ceva static -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="#">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="#">Register</a>
                         </li>
                     </ul>
                 </div>
